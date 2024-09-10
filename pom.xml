@@ -39,6 +39,13 @@
                 <version>${mybatis.spring}</version>
             </dependency>
 
+            <!--mybatis-plus 依赖配置-->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>3.4.3</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
