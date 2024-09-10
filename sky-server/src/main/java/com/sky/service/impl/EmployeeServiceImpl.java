@@ -1,5 +1,8 @@
 package com.sky.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.PasswordConstant;
@@ -7,11 +10,13 @@ import com.sky.constant.StatusConstant;
 import com.sky.context.BaseContext;
 import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
+import com.sky.dto.EmployeePageQueryDTO;
 import com.sky.entity.Employee;
 import com.sky.exception.AccountLockedException;
 import com.sky.exception.AccountNotFoundException;
 import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.EmployeeMapper;
+import com.sky.result.PageResult;
 import com.sky.service.EmployeeService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +86,29 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper,Employee> im
         employee.setUpdateUser(BaseContext.getCurrentId());
 
         this.saveOrUpdate(employee);
+    }
+
+    /**
+     * 使用Mybatis-plus进行 分页查询
+     * @param employeePageQueryDTO
+     * @return
+     */
+    @Override
+    public PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO) {
+        //创建Ipage对象
+        IPage page = new Page(employeePageQueryDTO.getPage(),employeePageQueryDTO.getPageSize());
+        //条件查询
+        QueryWrapper wrapper = new QueryWrapper<>();
+        wrapper.like("name",employeePageQueryDTO.getName());
+
+        //没输入模糊查询
+        if(employeePageQueryDTO.getName() == null){
+            employeeMapper.selectPage(page,null);
+        }else {
+            employeeMapper.selectPage(page,wrapper);
+        }
+
+        return new PageResult(page.getTotal(),page.getRecords());
     }
 
 }
