@@ -113,4 +113,21 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper,Employee> im
         this.update(wrapper);
     }
 
+    @Override
+    public Employee get(Long id) {
+        Employee employee = this.getById(id);
+        return employee;
+    }
+
+    @Override
+    public void update(EmployeeDTO employeeDTO) {
+        Employee employee = new Employee();
+        BeanUtils.copyProperties(employeeDTO,employee);
+
+        employee.setUpdateUser(BaseContext.getCurrentId());
+        employee.setUpdateTime(LocalDateTime.now());
+
+        this.saveOrUpdate(employee);
+    }
+
 }
