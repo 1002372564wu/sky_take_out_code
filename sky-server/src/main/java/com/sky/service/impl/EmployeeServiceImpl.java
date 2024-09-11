@@ -1,6 +1,7 @@
 package com.sky.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -99,16 +100,17 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper,Employee> im
         IPage page = new Page(employeePageQueryDTO.getPage(),employeePageQueryDTO.getPageSize());
         //条件查询
         QueryWrapper wrapper = new QueryWrapper<>();
-        wrapper.like("name",employeePageQueryDTO.getName());
-
-        //没输入模糊查询
-        if(employeePageQueryDTO.getName() == null){
-            employeeMapper.selectPage(page,null);
-        }else {
-            employeeMapper.selectPage(page,wrapper);
-        }
+        wrapper.like(employeePageQueryDTO.getName()!=null,"name",employeePageQueryDTO.getName());
+        employeeMapper.selectPage(page,wrapper);
 
         return new PageResult(page.getTotal(),page.getRecords());
+    }
+
+    @Override
+    public void startOrStop(Integer status, Long id) {
+        LambdaUpdateWrapper<Employee> wrapper = new LambdaUpdateWrapper<>();
+        wrapper.eq(Employee::getId,id).set(Employee::getStatus,status);
+        this.update(wrapper);
     }
 
 }
